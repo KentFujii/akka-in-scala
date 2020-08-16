@@ -1,0 +1,10 @@
+version: '2'
+services:
+  akka_in_scala:
+    build: .
+    tty: true
+    volumes:
+      - .:/akka-in-scala
+    ports:
+      - 9000:9000
+    command: sbt run
