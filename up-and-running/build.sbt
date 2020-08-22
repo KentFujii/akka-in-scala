@@ -2,7 +2,7 @@ name := "up-and-running"
 
 version := "1.0"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.12"
 
 libraryDependencies ++= {
   val akkaVersion = "2.4.12"
