@@ -3,7 +3,7 @@ package upandrunning
 import akka.actor.{Actor, PoisonPill, Props}
 
 object TicketSeller {
-  def props(event: String) = Props(new TicketSeller(event))
+  def props(event: String): Props = Props(new TicketSeller(event))
 
   case class Add(tickets: Vector[Ticket])
   case class Buy(tickets: Int)
@@ -20,7 +20,7 @@ class TicketSeller(event: String) extends Actor {
 
   var tickets = Vector.empty[Ticket]
 
-  def receive = {
+  def receive: Receive = {
     case Add(newTickets) => tickets = tickets ++ newTickets
     case Buy(nrOfTickets) =>
       val entries = tickets.take(nrOfTickets)

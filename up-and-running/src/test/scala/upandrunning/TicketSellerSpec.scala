@@ -4,6 +4,8 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
 import org.scalatest.{MustMatchers, WordSpecLike}
 
+import upandrunning.TicketSeller._
+
 class TicketSellerSpec extends TestKit(ActorSystem("testTickets"))
                          with WordSpecLike
                          with MustMatchers
@@ -11,7 +13,6 @@ class TicketSellerSpec extends TestKit(ActorSystem("testTickets"))
                          with StopSystemAfterAll {
   "The TicketSeller" must {
     "Sell tickets until they are sold out" in {
-      import TicketSeller._
 
       def mkTickets = (1 to 10).map(i=>Ticket(i)).toVector
       val event = "RHCP"
@@ -33,8 +34,6 @@ class TicketSellerSpec extends TestKit(ActorSystem("testTickets"))
     }
 
     "Sell tickets in batches until they are sold out" in {
-      import TicketSeller._
-
       val firstBatchSize = 10
 
       def mkTickets = (1 to (10 * firstBatchSize)).map(i=>Ticket(i)).toVector
