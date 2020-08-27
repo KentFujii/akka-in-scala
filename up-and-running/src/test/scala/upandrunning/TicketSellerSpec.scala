@@ -14,7 +14,7 @@ class TicketSellerSpec extends TestKit(ActorSystem("testTickets"))
   "The TicketSeller" must {
     "Sell tickets until they are sold out" in {
 
-      def mkTickets = (1 to 10).map(i=>Ticket(i)).toVector
+      def mkTickets: Vector[Ticket] = (1 to 10).map(i=>Ticket(i)).toVector
       val event = "RHCP"
       val ticketingActor = system.actorOf(TicketSeller.props(event))
 

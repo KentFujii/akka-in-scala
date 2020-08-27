@@ -9,19 +9,18 @@ object BoxOffice {
   def props(implicit timeout: Timeout): Props = Props(new BoxOffice)
   def name = "boxOffice"
 
+  case class CreateEvent(name: String, tickets: Int) // Message to create an event
+  case class GetEvent(name: String) // Message to get an event
+  case object GetEvents // Message to request all events
+  case class GetTickets(event: String, tickets: Int) // Message to get tickets for an event
+  case class CancelEvent(name: String) // Message to cancel the event
 
-  case class CreateEvent(name: String, tickets: Int)
-  case class GetEvent(name: String)
-  case object GetEvents
-  case class GetTickets(event: String, tickets: Int)
-  case class CancelEvent(name: String)
+  case class Event(name: String, tickets: Int) // Message describing the event
+  case class Events(events: Vector[Event]) // Message to describe a list of events
 
-  case class Event(name: String, tickets: Int)
-  case class Events(events: Vector[Event])
-
-  sealed trait EventResponse
-  case class EventCreated(event: Event) extends EventResponse
-  case object EventExists extends EventResponse
+  sealed trait EventResponse // Message response to CreateEvent
+  case class EventCreated(event: Event) extends EventResponse // Message to indicate the event was created
+  case object EventExists extends EventResponse // Message to indicate that the event already exists
 
 }
 
