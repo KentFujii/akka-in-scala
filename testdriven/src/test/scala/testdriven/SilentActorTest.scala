@@ -13,13 +13,13 @@ class SilentActorTest extends TestKit(ActorSystem("testsystem"))
 
   "A Silent Actor" must {
     "change internal state when it receives a message, multi" in {
-      import SilentActor._
+      import SilentActor._ //A companion object that keeps related messages together
 
-      val silentActor = system.actorOf(Props[SilentActor], "s3")
+      val silentActor = system.actorOf(Props[SilentActor], "s3") //Test system is used to create an actor
       silentActor ! SilentMessage("whisper1")
       silentActor ! SilentMessage("whisper2")
-      silentActor ! GetState(testActor)
-      expectMsg(Vector("whisper1", "whisper2"))
+      silentActor ! GetState(testActor) //Message is added to the companion to get state
+      expectMsg(Vector("whisper1", "whisper2")) //Used to check what message(s) have been sent to the testActor
     }
   }
 }
