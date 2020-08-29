@@ -1,17 +1,18 @@
 package testdriven
 
+
 import akka.testkit.TestKit
-import akka.actor.{ Actor, Props, ActorRef, ActorSystem }
-import org.scalatest.{MustMatchers, WordSpecLike }
+import akka.actor.ActorSystem
+import org.scalatest.{ MustMatchers, WordSpecLike }
+import FilteringActor._
 
 class FilteringActorTest extends TestKit(ActorSystem("testsystem"))
   with WordSpecLike
   with MustMatchers
   with StopSystemAfterAll {
-  "A Filtering Actor" must {
 
+  "A Filtering Actor" must {
     "filter out particular messages" in {
-      import FilteringActor._
       val props = FilteringActor.props(testActor, 5)
       val filter = system.actorOf(props, "filter-1")
       //Sends a couple of events including duplicates
@@ -33,9 +34,7 @@ class FilteringActorTest extends TestKit(ActorSystem("testsystem"))
       expectMsg(Event(6))
     }
 
-
     "filter out particular messages using expectNoMsg" in {
-      import FilteringActor._
       val props = FilteringActor.props(testActor, 5)
       val filter = system.actorOf(props, "filter-2")
       filter ! Event(1)
@@ -55,31 +54,5 @@ class FilteringActorTest extends TestKit(ActorSystem("testsystem"))
       expectMsg(Event(5))
       expectNoMsg()
     }
-
-  }
-}
-
-object FilteringActor {
-  def props(nextActor: ActorRef, bufferSize: Int): Props =
-    Props(new FilteringActor(nextActor, bufferSize))
-  case class Event(id: Long)
-}
-
-//Max size for the buffer is passed into constructor
-class FilteringActor(nextActor: ActorRef, bufferSize: Int) extends Actor {
-  import FilteringActor._
-  var lastMessages: Vector[Event] = Vector[Event]()
-  def receive: Receive = {
-    case msg: Event =>
-      if (!lastMessages.contains(msg)) {
-        lastMessages = lastMessages :+ msg
-        //Event is sent to next actor if it's not found in the buffer
-        nextActor ! msg
-        if (lastMessages.size > bufferSize) {
-          // discard the oldest
-          //Oldest event in the buffer is discarded when max buffer size is reached
-          lastMessages = lastMessages.tail
-        }
-      }
   }
 }
