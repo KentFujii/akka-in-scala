@@ -2,8 +2,8 @@ package testdriven
 
 
 import akka.testkit.TestKit
-import akka.actor.ActorSystem
-import org.scalatest.{ MustMatchers, WordSpecLike }
+import akka.actor.{ActorRef, ActorSystem}
+import org.scalatest.{MustMatchers, WordSpecLike}
 import FilteringActor._
 
 class FilteringActorTest extends TestKit(ActorSystem("testsystem"))
@@ -14,7 +14,7 @@ class FilteringActorTest extends TestKit(ActorSystem("testsystem"))
   "A Filtering Actor" must {
     "filter out particular messages" in {
       val props = FilteringActor.props(testActor, 5)
-      val filter = system.actorOf(props, "filter-1")
+      val filter: ActorRef = system.actorOf(props, "filter-1")
       //Sends a couple of events including duplicates
       filter ! Event(1)
       filter ! Event(2)
