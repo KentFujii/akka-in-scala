@@ -11,13 +11,10 @@ import scala.language.postfixOps
 
 class EchoActorTest extends TestKit(ActorSystem("testsystem"))
   with WordSpecLike
-  with ImplicitSender
+  with ImplicitSender //Sets the implicit sender to the TestKit its actor reference
   with StopSystemAfterAll {
-
-
   "An EchoActor" must {
     "Reply with the same message it receives" in {
-
       import akka.pattern.ask
       import scala.concurrent.duration._
       implicit val timeout: Timeout = Timeout(3 seconds)
@@ -26,18 +23,15 @@ class EchoActorTest extends TestKit(ActorSystem("testsystem"))
       val future = echo.ask("some message")
       future.onComplete {
         case Failure(_)   => //handle failure
-        case Success(msg) => //handle success
+        case Success(_) => //handle success
       }
-
       Await.ready(future, timeout.duration)
     }
 
     "Reply with the same message it receives without ask" in {
       val echo = system.actorOf(Props[EchoActor], "echo2")
-      echo ! "some message"
-      expectMsg("some message")
-
+      echo ! "some message" //Sends a message to the actor
+      expectMsg("some message") //Asserts the message as usual
     }
-
   }
 }
