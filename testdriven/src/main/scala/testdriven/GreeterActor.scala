@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 
 object GreeterActor {
   case class Greeting(message: String)
-  val testSystem: ActorSystem = {
+  val testSystem: ActorSystem = { //Creates a system with a configuration that attaches a test event listener
     val config = ConfigFactory.parseString(
       """
          akka.loggers = [akka.testkit.TestEventListener]
