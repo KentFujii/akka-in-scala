@@ -6,7 +6,7 @@
 ## chapter
 
 - [x] up-and-running
-- [ ] testdriven
+- [x] testdriven
 - [ ] fault-tolerance
 - [ ] futures
 - [ ] remoting
