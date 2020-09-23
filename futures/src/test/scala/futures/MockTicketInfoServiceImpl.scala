@@ -1,0 +1,3 @@
+package futures
+
+object MockTicketInfoServiceImpl extends TicketInfoService with MockWebServiceCalls

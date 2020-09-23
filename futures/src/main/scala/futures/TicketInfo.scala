@@ -15,13 +15,20 @@ case class Artist(name: String, calendarUri: String)
 
 case class Location(lat: Double, lon: Double)
 
-case class RouteByCar(route: String, timeToLeave: DateTime, origin: Location, destination: Location,
-                 estimatedDuration: Duration, trafficJamTime: Duration)
+case class RouteByCar(route: String,
+                      timeToLeave: DateTime,
+                      origin: Location,
+                      destination: Location,
+                      estimatedDuration: Duration,
+                      trafficJamTime: Duration)
 
-case class PublicTransportAdvice(advice: String, timeToLeave: DateTime, origin: Location, destination: Location,
+case class PublicTransportAdvice(advice: String,
+                                 timeToLeave: DateTime,
+                                 origin: Location,
+                                 destination: Location,
                                  estimatedDuration: Duration)
 
 case class TravelAdvice(routeByCar: Option[RouteByCar]=None,
-                        publicTransportAdvice:  Option[PublicTransportAdvice]=None)
+                        publicTransportAdvice: Option[PublicTransportAdvice]=None)
 
 case class Weather(temperature: Int, precipitation: Boolean)
