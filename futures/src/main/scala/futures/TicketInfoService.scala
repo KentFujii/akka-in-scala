@@ -17,7 +17,7 @@ trait TicketInfoService extends WebServiceCalls {
 
   // recover with the ticketInfo that was built in the previous step
   def withPrevious(previous: TicketInfo): Recovery[TicketInfo] = {
-    case NonFatal(e) => previous
+    case NonFatal(_) => previous
   }
 
   def getTicketInfo(ticketNr: String, location: Location): Future[TicketInfo] = {
@@ -52,36 +52,8 @@ trait TicketInfoService extends WebServiceCalls {
     }
   }
 
-  def getTraffic(ticketInfo: TicketInfo): Future[TicketInfo] = {
-    ticketInfo.event.map { event =>
-      callTrafficService(ticketInfo.userLocation, event.location, event.time).map{ routeResponse =>
-        ticketInfo.copy(travelAdvice = Some(TravelAdvice(routeByCar = routeResponse)))
-      }
-    }.getOrElse(Future.successful(ticketInfo))
-  }
-
-  def getCarRoute(ticketInfo: TicketInfo): Future[TicketInfo] = {
-    ticketInfo.event.map { event =>
-      callTrafficService(ticketInfo.userLocation, event.location, event.time).map{ routeResponse =>
-        val newTravelAdvice = ticketInfo.travelAdvice.map(_.copy(routeByCar = routeResponse))
-        ticketInfo.copy(travelAdvice = newTravelAdvice)
-      }.recover(withPrevious(ticketInfo))
-    }.getOrElse(Future.successful(ticketInfo))
-  }
-
-  def getPublicTransportAdvice(ticketInfo: TicketInfo): Future[TicketInfo] = {
-    ticketInfo.event.map { event =>
-      callPublicTransportService(ticketInfo.userLocation, event.location, event.time).map{ publicTransportResponse =>
-        val newTravelAdvice = ticketInfo.travelAdvice.map(_.copy(publicTransportAdvice = publicTransportResponse))
-        ticketInfo.copy(travelAdvice = newTravelAdvice)
-      }.recover(withPrevious(ticketInfo))
-    }.getOrElse(Future.successful(ticketInfo))
-  }
-
   def getTravelAdvice(info: TicketInfo, event: Event): Future[TicketInfo] = {
-
     val futureRoute = callTrafficService(info.userLocation, event.location, event.time).recover(withNone)
-
     val futurePublicTransport = callPublicTransportService(info.userLocation, event.location, event.time).recover(withNone)
 
     futureRoute.zip(futurePublicTransport).map { case(routeByCar, publicTransportAdvice) =>
@@ -91,20 +63,10 @@ trait TicketInfoService extends WebServiceCalls {
   }
 
   def getWeather(ticketInfo: TicketInfo): Future[TicketInfo] = {
-
     val futureWeatherX = callWeatherXService(ticketInfo).recover(withNone)
-
     val futureWeatherY = callWeatherYService(ticketInfo).recover(withNone)
-
     Future.firstCompletedOf(Seq(futureWeatherX, futureWeatherY)).map { weatherResponse =>
       ticketInfo.copy(weather = weatherResponse)
-    }
-  }
-
-
-  def getPlannedEventsWithTraverse(event: Event, artists: Seq[Artist]): Future[Seq[Event]] = {
-    Future.traverse(artists) { artist=>
-      callArtistCalendarService(artist, event.location)
     }
   }
 
@@ -114,30 +76,9 @@ trait TicketInfoService extends WebServiceCalls {
   }
 
   def getSuggestions(event: Event): Future[Seq[Event]] = {
-
     val futureArtists = callSimilarArtistsService(event).recover(withEmptySeq)
-
     for(artists <- futureArtists.recover(withEmptySeq);
         events <- getPlannedEvents(event, artists).recover(withEmptySeq)
     ) yield events
-  }
-
-  def getSuggestionsWithFlatMapAndMap(event: Event): Future[Seq[Event]] = {
-
-    val futureArtists = callSimilarArtistsService(event).recover(withEmptySeq)
-    futureArtists.flatMap { artists=>
-      Future.traverse(artists)(artist=> callArtistCalendarService(artist, event.location))
-    }.recover(withEmptySeq)
-  }
-
-  def getTravelAdviceUsingForComprehension(info: TicketInfo, event: Event): Future[TicketInfo] = {
-
-    val futureRoute = callTrafficService(info.userLocation, event.location, event.time).recover(withNone)
-
-    val futurePublicTransport = callPublicTransportService(info.userLocation, event.location, event.time).recover(withNone)
-
-    for((routeByCar, publicTransportAdvice) <- futureRoute.zip(futurePublicTransport);
-         travelAdvice = TravelAdvice(routeByCar, publicTransportAdvice)
-    ) yield info.copy(travelAdvice = Some(travelAdvice))
   }
 }
