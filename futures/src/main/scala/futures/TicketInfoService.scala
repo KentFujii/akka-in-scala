@@ -25,9 +25,7 @@ trait TicketInfoService extends WebServiceCalls {
     val eventInfo = getEvent(ticketNr, location).recover(withPrevious(emptyTicketInfo))
 
     eventInfo.flatMap { info =>
-
       val infoWithWeather = getWeather(info)
-
       val infoWithTravelAdvice = info.event.map { event =>
         getTravelAdvice(info, event)
       }.getOrElse(eventInfo)
