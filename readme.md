@@ -8,7 +8,7 @@
 - [x] up-and-running
 - [x] testdriven
 - [x] fault-tolerance
-- [ ] futures
+- [x] futures
 - [ ] remoting
 - [ ] conf-deploy
 - [ ] structure
